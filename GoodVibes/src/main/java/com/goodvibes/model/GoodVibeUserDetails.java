@@ -27,23 +27,23 @@ public class GoodVibeUserDetails {
     @Column(name="USER_DETAILS_ID")
     private Integer id;
     
-    @Column(name="USERNAME", length = 45, unique=true)
+    @Column(name="USERNAME", length = 45, unique=true, nullable=false)
 	private String username;
 
-    @Column(name="EMAIL", length = 100, unique=true)
+    @Column(name="EMAIL", length = 100, unique=true, nullable=false)
 	private String email;
     
-    @Column(name="PASSWORD", length = 100)
+    @Column(name="PASSWORD", length = 100, nullable=false)
 	private String password;
     
     // FIXME: check if the below code works
-    @Column(name="ENABLED", columnDefinition = "TINYINT")
+    @Column(name="ENABLED", columnDefinition = "TINYINT", nullable=false)
     @Type(type = "org.hibernate.type.NumericBooleanType")
-	private boolean active;
+	private boolean active = true;
 
     @Column(name="LANG", length = 8)
-    private String language;
-    	
+    private String language = "en";
+    
     @Column(name="F_NAME", length = 45)
     private String firstName;
     
@@ -56,7 +56,10 @@ public class GoodVibeUserDetails {
     @Column(name="LOCATION", length = 45)
     private String location;
     
-    @Column(name="DOB")
+    public Integer getId() {
+		return id;
+	}
+	@Column(name="DOB")
     private Date dob;
     
     @Column(name="WEBSITES", length = 60)

@@ -20,10 +20,8 @@ public class UserDaoImplHibernate implements UserDao {
 	@Autowired
 	private SessionFactory sessionFactory;
 
-	
 	// You want to make sure you test this method independently from Spring Authentication
 	// Spring Authentication will simply NOT authenticate you if this throws an error (no stack trace displayed)
-	
 	@Override
 	@Transactional(readOnly = true)
 	public GoodVibeUserDetails findByUsernameOrEmail(String usernameOrEmail) {
@@ -59,5 +57,25 @@ public class UserDaoImplHibernate implements UserDao {
 
 		return userDetails;
 	}
+
+	@Override
+	@Transactional
+	public GoodVibeUserDetails registerUser(GoodVibeUserDetails user) {
+
+		sessionFactory.getCurrentSession().save(user);
+		// return the user with its generated ID
+		
+		// FIXME: The only safe thing to do after an exception with the session, is to rollback the transaction and close it. Any other type of interaction will probably generate another exception (in this case an assertion exception).
+		
+		return user;
+	}
+	
+//	@Override
+//	public void updateDetailsForUser(GoodVibeUserDetails user) {
+//
+//		sessionFactory.getCurrentSession().update(user);
+//		
+//		return null;
+//	}
 
 }

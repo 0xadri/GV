@@ -19,8 +19,9 @@ public class UserImage {
 	@Column(name="USER_IMAGE_ID")
 	private Integer imageId;
     
+	// type = 1, profile pic
     @Column(name="TYPE", nullable = false)
-    private int type;
+    private Integer type;
     
     @Column(name="NAME", length = 50)
     private String name;

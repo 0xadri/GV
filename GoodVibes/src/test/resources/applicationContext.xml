@@ -14,8 +14,8 @@
   	<!-- for @Components, @Controller, @Service, @Configuration, etc. -->
 	<context:annotation-config />
 	<context:component-scan base-package="com.goodvibes" />
-		
-	<bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer" p:location="/WEB-INF/jdbc.properties" />
+	
+	<bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer" p:location="jdbcTests.properties" />
 
 	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close" 
 		p:driverClassName="${jdbc.driverClassName}" p:url="${jdbc.databaseurl}" 

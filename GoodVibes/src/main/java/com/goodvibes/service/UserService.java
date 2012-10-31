@@ -4,6 +4,7 @@ import com.goodvibes.model.GoodVibeUserDetails;
 
 
 public interface UserService {
+
 	public GoodVibeUserDetails getUser(String username);
 	
 }

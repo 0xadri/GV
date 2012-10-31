@@ -20,7 +20,7 @@ public class RoleEntity {
     @Column(name="ROLE_ID")
     private Integer id;
     
-    @Column(name="ROLE_NAME", length = 45)
+    @Column(name="ROLE_NAME", length = 45, unique=true, nullable=false)
 	private String roleName;
 
     @ManyToMany(mappedBy="roles")
