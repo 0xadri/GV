@@ -1,9 +1,10 @@
 package com.goodvibes.dao;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Locale;
-import java.util.Set;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,10 +13,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-
-import com.goodvibes.model.GoodVibeUserDetails;
 import com.goodvibes.model.RoleEntity;
-
+import java.text.ParseException;
 
 
 
@@ -24,82 +23,135 @@ import com.goodvibes.model.RoleEntity;
 public class RoleDaoImplHibernateTests extends AbstractTestNGSpringContextTests {
 
 	@Autowired
-	private UserDao userDao;
+	private RoleDao roleDao;
 
-	private GoodVibeUserDetails user; 
+	private RoleEntity role; 
 
 	@BeforeMethod
 	public void beforeEachMethod() throws ParseException{
-		user = new GoodVibeUserDetails();
-		user.setUsername("adrien");
-		user.setActive(true);
-		user.setDob(new SimpleDateFormat("MMMM d, yyyy", Locale.ENGLISH).parse("January 2, 1983"));
-		user.setEmail("adib@hotmail.com");
-		user.setFirstName("adri");
-		user.setGender('M');
-		// FIXME: mock Image?
-		//user.setImages(Set<UserImage>)
-		user.setInterests("loads");
-		user.setLanguage("en");
-		user.setLastName("Jo");
-		user.setLocation("Moon");
-		user.setPassword("averylongpassword");
-		user.setWebsites("mysite.com");
-		
-		RoleEntity role = new RoleEntity();
+		role = new RoleEntity();
 		role.setRoleName("anonymous");
-		Set<RoleEntity> collectionOfRoles = user.getRoles();
-		collectionOfRoles.add(role);
-		user.setRoles(collectionOfRoles);
-		
 		// FIXME: Drop database and recreate it along with tables
 	}
 
+	
 	/*
-	 * ROLE's Rolename - test cases
+	 * Save when everything is fine - test cases
+	 */
+	@Test
+	public void shouldAcceptSaveAndReturnRoleWithId() throws Exception{
+		//Given
+		assertNull(role.getId()) ;
+		//When
+		role = roleDao.saveRole(role);
+		//Then
+		assertNotNull(role.getId()) ;
+	}
+	
+	@Test
+	public void shouldAcceptSaveAndReturnDifferentIds() throws Exception{
+		//Given
+		role.setRoleName("admin");
+		role = roleDao.saveRole(role);
+		int roleOneId = role.getId();
+		
+		//When
+		role.setRoleName("master");
+		role = roleDao.saveRole(role);
+		int roleTwoId = role.getId();
+		
+		//Then
+		assertThat(roleOneId,not(roleTwoId));
+	}
+	
+	/*
+	 * Save when everything is NOT fine: Role name - checking constraints..
 	 */
 	@Test(expectedExceptions = org.hibernate.exception.DataException.class)
 	public void shouldRejectSaveOrUpdateAsRoleNameIsTooLong() throws Exception{
-		RoleEntity role = new RoleEntity();
+		//Given
 		role.setRoleName("super hiper mega powerful uuuuuuuuuuuuuuuuuuuuuser");
-		Set<RoleEntity> collectionOfRoles = user.getRoles();
-		collectionOfRoles.add(role);
-		user.setRoles(collectionOfRoles);
-		userDao.registerUser(user);
+		//When
+		roleDao.saveRole(role);
+		//Then
+		//cf expected exception		
 	}
 
 	@Test(expectedExceptions = org.hibernate.exception.ConstraintViolationException.class)
 	public void shouldRejectSaveOrUpdateAsRoleIsDuplicate() throws Exception{
-		RoleEntity role = new RoleEntity();
-		role.setRoleName("anonymous");
-		Set<RoleEntity> collectionOfRoles = user.getRoles();
-		collectionOfRoles.add(role);
-		user.setRoles(collectionOfRoles);
-		userDao.registerUser(user);
+		//Given
+		// we do not change role setup in beforeEachMethod()
+		//When
+		roleDao.saveRole(role);
+		roleDao.saveRole(role);
+		//Then
+		//cf expected exception
+	}
+
+	@Test(expectedExceptions = org.hibernate.PropertyValueException.class)
+	public void shouldRejectSaveOrUpdateAsRoleIsNull() throws Exception{
+		//Given
+		role.setRoleName(null);
+		//When
+		roleDao.saveRole(role);
+		//Then
+		//cf expected exception
+	}
+
+	/*
+	 * getRoleEntityForRoleName - test cases
+	 */
+	@Test
+	public void shouldReturnCorrectRoleEntityForRoleName() throws Exception{
+		final String roleName = "supamaster";
+		//Given
+		role.setRoleName(roleName);
+		roleDao.saveRole(role);
+		//When
+		RoleEntity roleReceived = roleDao.getRoleEntityForRoleName(roleName);
+		//Then
+		assertThat(role,equalTo(roleReceived));
 	}
 	
+	@Test(expectedExceptions = com.goodvibes.exception.RoleNotFoundException.class)
+	public void shouldThrowExceptionAsRoleNameDoesNotExist() throws Exception{
+		roleDao.getRoleEntityForRoleName("randomRoleName");
+	}
+	
+	/*
+	 * getRoleEntityForRoleId - test cases
+	 */
 	@Test
-	public void shouldAcceptSaveOrUpdateAsRoleIsUnique() throws Exception{
-		RoleEntity role = new RoleEntity();
-		role.setRoleName("admin");
-		Set<RoleEntity> collectionOfRoles = user.getRoles();
-		collectionOfRoles.add(role);
-		user.setRoles(collectionOfRoles);
-		userDao.registerUser(user);
+	public void shouldReturnCorrectRoleEntityForId() throws Exception{
+		//Given
+		roleDao.saveRole(role);
+		int id = role.getId();
+		//When
+		RoleEntity roleReceived = roleDao.getRoleEntityForRoleId(id);
+		//Then
+		assertThat(role,equalTo(roleReceived));
+	}
+	
+	@Test(expectedExceptions = com.goodvibes.exception.RoleNotFoundException.class)
+	public void shouldThrowExceptionAsIdDoesNotExist() throws Exception{
+		roleDao.getRoleEntityForRoleId(908798);
+	}
+	
+	/*
+	 * getRoleAndCollectionOfUsersForRoleId - test cases
+	 */
+	@Test
+	public void shouldReturnCorrectUsersForRoleId() throws Exception{
+		//Given
+		roleDao.saveRole(role);
+		int id = role.getId();
+		//When
+		RoleEntity roleReceived = roleDao.getRoleEntityForRoleId(id);
+		//Then
+		assertThat(role,equalTo(roleReceived));
 	}
 
-	@Test
-	public void shouldAcceptSaveOrUpdateAsSeveralUsersWithSameRoleIsAllowed() throws Exception{
-		userDao.registerUser(user);
-		
-		user.setEmail("otherUser@email.com");
-		user.setUsername("OtherUser");
-		RoleEntity role = new RoleEntity();
-		role.setRoleName("anonymous");
-		Set<RoleEntity> collectionOfRoles = user.getRoles();
-		collectionOfRoles.add(role);
-		user.setRoles(collectionOfRoles);
-		userDao.registerUser(user);		
-	}
 
+	
+	
 }

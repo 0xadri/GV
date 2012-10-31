@@ -5,6 +5,7 @@ import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+
 import com.goodvibes.exception.RoleNotFoundException;
 import com.goodvibes.model.RoleEntity;
 
@@ -17,6 +18,13 @@ public class RoleDaoImplHibernate implements RoleDao {
 
 	@Override
 	@Transactional
+	public RoleEntity saveRole(RoleEntity role) {
+		sessionFactory.getCurrentSession().save(role);
+		return role;
+	}
+
+	@Override
+	@Transactional
 	public RoleEntity getRoleEntityForRoleName(String roleName) throws RoleNotFoundException {
 
 		String hql = "FROM RoleEntity WHERE roleName = '" + roleName + "'";
@@ -24,9 +32,21 @@ public class RoleDaoImplHibernate implements RoleDao {
 		
 		RoleEntity role = (RoleEntity) query.uniqueResult();
 		
-		if (role == null){
-			throw new RoleNotFoundException("role not found for roleName: " + roleName);
-		}
+		if (role == null) throw new RoleNotFoundException("role not found for roleName: " + roleName);
+		
+		return role;
+	}
+
+	@Override
+	@Transactional
+	public RoleEntity getRoleEntityForRoleId(int id) throws RoleNotFoundException {
+		
+		String hql = "FROM RoleEntity WHERE id = '" + id + "'";
+		Query query = sessionFactory.getCurrentSession().createQuery(hql);
+		
+		RoleEntity role = (RoleEntity) query.uniqueResult();
+		
+		if (role == null) throw new RoleNotFoundException("role not found for id: " + id);
 		
 		return role;
 	}

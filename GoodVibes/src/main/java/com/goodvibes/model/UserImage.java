@@ -36,6 +36,31 @@ public class UserImage {
     @Lob
     private Blob content;
 	
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((imageId == null) ? 0 : imageId.hashCode());
+		return result;
+	}
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		UserImage other = (UserImage) obj;
+		if (imageId == null) {
+			if (other.imageId != null)
+				return false;
+		} else if (!imageId.equals(other.imageId))
+			return false;
+		return true;
+	}
+	
 	
     public int getType() {
 		return type;
@@ -61,7 +86,7 @@ public class UserImage {
 	public Integer getLength() {
 		return length;
 	}
-	public void setLength(Integer length) {
+	public void setLength(int length) {
 		this.length = length;
 	}
 

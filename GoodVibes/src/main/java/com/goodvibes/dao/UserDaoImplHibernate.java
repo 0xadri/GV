@@ -71,7 +71,7 @@ public class UserDaoImplHibernate implements UserDao {
 	}
 	
 //	@Override
-//	public void updateDetailsForUser(GoodVibeUserDetails user) {
+//	public void updateUser(GoodVibeUserDetails user) {
 //
 //		sessionFactory.getCurrentSession().update(user);
 //		
