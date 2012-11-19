@@ -10,6 +10,10 @@ public interface UserDao {
 	GoodVibeUserDetails findByUsernameOrEmail(String username);
 
 	GoodVibeUserDetails getDetailsRolesAndImagesForUser(String username);
+
+	GoodVibeUserDetails findByUsername(String username);
+
+	GoodVibeUserDetails findByEmail(String email);
 	
 	// TODO: GoodVibeUserDetails updateUser(GoodVibeUserDetails user);
 	// check it cascades the changes to images, roles, etc

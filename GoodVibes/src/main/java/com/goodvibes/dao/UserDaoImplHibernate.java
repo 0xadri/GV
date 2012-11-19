@@ -1,7 +1,5 @@
 package com.goodvibes.dao;
 
-import java.util.Set;
-
 import org.hibernate.Hibernate;
 import org.hibernate.Query;
 import org.hibernate.SessionFactory;
@@ -10,7 +8,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.goodvibes.model.RoleEntity;
 import com.goodvibes.model.GoodVibeUserDetails;
 
 
@@ -38,6 +35,37 @@ public class UserDaoImplHibernate implements UserDao {
 		return userDetails;
 	}
 
+	@Override
+	@Transactional(readOnly = true)
+	public GoodVibeUserDetails findByUsername(String username) {
+		
+		String hql = "FROM GoodVibeUserDetails WHERE username = '" + username + "'";
+		Query query = sessionFactory.getCurrentSession().createQuery(hql);
+		
+		GoodVibeUserDetails userDetails = (GoodVibeUserDetails) query.uniqueResult();
+		
+		if (userDetails == null){
+			throw new UsernameNotFoundException("user not found for username : " + username);
+		}
+				
+		return userDetails;
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public GoodVibeUserDetails findByEmail(String email) {
+		
+		String hql = "FROM GoodVibeUserDetails WHERE email = '" + email + "'";
+		Query query = sessionFactory.getCurrentSession().createQuery(hql);
+		
+		GoodVibeUserDetails userDetails = (GoodVibeUserDetails) query.uniqueResult();
+		
+		if (userDetails == null){
+			throw new UsernameNotFoundException("user not found for email : " + email);
+		}
+				
+		return userDetails;
+	}
 
 	@Override
 	@Transactional(readOnly = true)
@@ -63,11 +91,8 @@ public class UserDaoImplHibernate implements UserDao {
 	public GoodVibeUserDetails registerUser(GoodVibeUserDetails user) {
 
 		sessionFactory.getCurrentSession().save(user);
-		// return the user with its generated ID
 		
-		// FIXME: The only safe thing to do after an exception with the session, is to rollback the transaction and close it. Any other type of interaction will probably generate another exception (in this case an assertion exception).
-		
-		return user;
+		return user;  // return the user with its generated ID
 	}
 	
 //	@Override
