@@ -7,6 +7,12 @@ public interface UserService {
 
 	public GoodVibeUserDetails getUser(String username);
 	
+	public void registerUser(GoodVibeUserDetails user);
+
+	boolean doesUsernameAlreadyExist(String username);
+
+	boolean doesEmailAlreadyExist(String email);
+	
 	// TODO necessary??
 	//void saveRoleForUser(String username, RoleEntity role);
 	

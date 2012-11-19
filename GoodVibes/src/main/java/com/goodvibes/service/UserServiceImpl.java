@@ -21,6 +21,35 @@ public class UserServiceImpl implements UserService {
 		
 		return user;
 	}
-	
 
+	@Override
+	public void registerUser(GoodVibeUserDetails user) {
+		userDao.registerUser(user);
+	}
+
+	@Override
+	public boolean doesUsernameAlreadyExist(String username) {
+		
+		GoodVibeUserDetails user = null;
+		try{
+			user = userDao.findByUsername(username);
+		}
+		catch(UsernameNotFoundException e){	}
+		
+		return user != null;
+	}
+
+	@Override
+	public boolean doesEmailAlreadyExist(String email) {
+		
+		GoodVibeUserDetails user = null;
+		try{
+			user = userDao.findByEmail(email);
+		}
+		catch(UsernameNotFoundException e){	}
+		
+		return user != null;
+	}
+
+	
 }
