@@ -14,6 +14,7 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.hibernate.annotations.Type;
 
@@ -35,8 +36,10 @@ public class GoodVibeUserDetails {
 
     @Column(name="PASSWORD", length = 100, nullable=false)
 	private String password;
+
+    @Transient
+	private String passwordConfirmation;
     
-    // FIXME: check if the below code works
     @Column(name="ENABLED", columnDefinition = "TINYINT", nullable=false)
     @Type(type = "org.hibernate.type.NumericBooleanType")
 	private boolean active = true;
@@ -99,6 +102,13 @@ public class GoodVibeUserDetails {
 	}
 	public void setPassword(String password) {
 		this.password = password;
+	}
+	
+	public String getPasswordConfirmation() {
+		return passwordConfirmation;
+	}
+	public void setPasswordConfirmation(String passwordConfirmation) {
+		this.passwordConfirmation = passwordConfirmation;
 	}
 	
 	public boolean isActive() {
